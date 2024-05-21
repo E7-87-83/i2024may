@@ -1,0 +1,5 @@
+database: iot_data
+hostname: localhost
+port: 3306;
+dbuser: interview
+dbuserpw: 20240521
