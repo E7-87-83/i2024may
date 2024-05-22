@@ -99,7 +99,7 @@ sys	0m19.870s
 
 Consider approximately-linearity of the program, this suggests that the program needs one and a half day to process 100 1GB files into a local MySQL database on my average laptop computer.
 
-## Note - program run on
+## Note - my laptop spec
 ```
 Architecture:                       x86_64
 CPU op-mode(s):                     32-bit, 64-bit
