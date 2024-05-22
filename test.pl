@@ -32,8 +32,6 @@ my ($database, $hostname, $port, $dbuser, $dbuserpw) = (
 
 
 
-
-
 my $queue = Thread::Queue->new;
 
 opendir(my $dh, $dir_to_be) || die "Can't open $dir_to_be: $!";
@@ -58,7 +56,6 @@ for (1..4) {
        }
        $dbh->disconnect();
    };
-    
 }
 
 $_->join() for @threads;
@@ -76,12 +73,12 @@ sub process_file {
     my ($dir, $file, $dbh) = @_;
     # Perform the file processing logic here
     print "Processing file: $file\n";
-    print random_string(16)."\n";
 
     my @rows;
     # Read/parse CSV
     my $csv = Text::CSV_XS->new ({ binary => 1, auto_diag => 1 });
-    open my $fh, "<:encoding(utf8)", File::Spec->catfile($dir, $file) or die "$file: $!";
+    open my $fh, "<:encoding(utf8)", File::Spec->catfile($dir, $file) 
+        or die "$file: $!";
     my $rn = 0;
     my %sensor_hash;
     while (my $row = $csv->getline($fh)) {
@@ -101,7 +98,7 @@ sub process_file {
             $dbh->do("INSERT INTO T_SENSOR (SENSOR_ID, SENSOR_NAME, CREATED_AT) 
                       VALUES (\"$sensor_id\", \"$sensor_name\", \"$current_time\")") 
                 or
-            warn "cannot insert into table: row number $rn, $sensor_name, $sensor_id";
+            warn "ERROR: Cannot insert into table: row number $rn, $sensor_name, $sensor_id";
         }
         my $sensor_id = $sensor_hash{$sensor_name};
         my $current_time = DateTime->now->datetime();
@@ -109,39 +106,82 @@ sub process_file {
 #           print $row->[0], " ", $row->[1], " ", $row->[2], "\n";
             my $data_id = datetime_pure_str($dt).random_string(10);
             my $time = $row->[0]; 
-            $dbh->do("INSERT INTO T_DATA (DATA_ID, TAKEN_AT, SENSOR_ID, SENSOR_READING,  SENSOR_NAME, CREATED_AT, VALIDITY) 
-                      VALUES (\"$data_id\", \"$time\", \"$sensor_id\", $meter,  \"$sensor_name\", \"$current_time\", \"Y\")") 
+            $dbh->do("INSERT INTO T_DATA (
+                        DATA_ID, 
+                        TAKEN_AT, 
+                        SENSOR_ID, 
+                        SENSOR_READING,  
+                        SENSOR_NAME, 
+                        CREATED_AT, 
+                        VALIDITY
+                      ) VALUES (
+                        \"$data_id\", 
+                        \"$time\", 
+                        \"$sensor_id\", 
+                        $meter,  
+                        \"$sensor_name\", 
+                        \"$current_time\", 
+                        \"Y\"
+                      )") 
                 or
-            warn "Cannot insert into table: row number $rn --- $dt, $sensor_name, $meter";
+            warn "ERROR: Cannot insert into table: row number $rn --- $dt, $sensor_name, $meter";
         }
         elsif ($dt_correct && !$mt_correct) {
 #           print $row->[0], " ", $row->[1], " ", $row->[2], "\n";
-            print "Something wrong on row number $rn, $file: sensor reading invalid\n";
+            print "Data corrupted on row number $rn, $file: Sensor reading invalid\n";
             my $data_id = datetime_pure_str($dt).random_string(10);
             my $time = $row->[0]; 
-            $dbh->do("INSERT INTO T_DATA (DATA_ID, TAKEN_AT, SENSOR_ID, ORIGINAL_SENSOR_READING, SENSOR_NAME, CREATED_AT, VALIDITY) 
-                      VALUES (\"$data_id\", \"$time\", \"$sensor_id\", \"$meter\",  \"$sensor_name\", \"$current_time\", \"N\")") 
+            $dbh->do("INSERT INTO T_DATA (
+                        DATA_ID, 
+                        TAKEN_AT, 
+                        SENSOR_ID, 
+                        ORIGINAL_SENSOR_READING, 
+                        SENSOR_NAME, 
+                        CREATED_AT, 
+                        VALIDITY
+                      ) VALUES (
+                        \"$data_id\", 
+                        \"$time\", 
+                        \"$sensor_id\", 
+                        \"$meter\",  
+                        \"$sensor_name\", 
+                        \"$current_time\", 
+                        \"N\"
+                      )") 
                 or
-            warn "Cannot insert into table: row number $rn --- $dt, $sensor_name, $meter";
+            warn "ERROR: Cannot insert into table: row number $rn --- $dt, $sensor_name, $meter";
         }
         elsif (!$dt_correct && $mt_correct) {
 #           print $row->[0], " ", $row->[1], " ", $row->[2], "\n";
-            print "Something wrong on row number $rn, $file: Datetime invalid\n";
+            print "Data corrupted on row number $rn, $file: Datetime invalid\n";
             my $data_id = "NULL".random_string(10);
-            $dbh->do("INSERT INTO T_DATA (DATA_ID, TAKEN_AT, SENSOR_ID, ORIGINAL_SENSOR_READING, SENSOR_NAME, CREATED_AT, VALIDITY) 
-                      VALUES (\"$data_id\", NULL, \"$sensor_id\", $meter,  \"$sensor_name\", \"$current_time\", \"N\")") 
+            $dbh->do("INSERT INTO T_DATA (
+                        DATA_ID, 
+                        TAKEN_AT, 
+                        SENSOR_ID, 
+                        SENSOR_READING, 
+                        SENSOR_NAME, 
+                        CREATED_AT, 
+                        VALIDITY
+                      ) VALUES (
+                        \"$data_id\", 
+                        NULL, 
+                        \"$sensor_id\",
+                        $meter,  
+                        \"$sensor_name\", 
+                        \"$current_time\", 
+                        \"N\"
+                      )") 
                 or
-            warn "Cannot insert into table: row number $rn --- $dt, $sensor_name, $meter";
+            warn "ERROR: Cannot insert into table: row number $rn --- $dt, $sensor_name, $meter";
         }
         else{       # !$dt_correct && !$mt_correct
 #           print $row->[0], " ", $row->[1], " ", $row->[2], "\n";
-            print "Something wrong on row number $rn, $file: DATA NOT PROCESSED\n"; 
+            print "Data corrupted on row number $rn, $file: DATA NOT PROCESSED\n"; 
         }
     }
     close $fh;
 }
-
-
 
 
 
