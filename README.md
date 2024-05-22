@@ -16,10 +16,9 @@ mysql> DESCRIBE T_DATA;
 | ORIGINAL_SENSOR_READING | varchar(255) | YES  |     | NULL    |                |
 | CREATED_AT              | datetime     | YES  |     | NULL    |                |
 | PAYLOAD                 | varchar(255) | YES  |     | NULL    |                |
-| SENSOR_NAME             | varchar(255) | YES  |     | NULL    |                |
 | VALIDITY                | varchar(1)   | YES  |     | NULL    |                |
 +-------------------------+--------------+------+-----+---------+----------------+
-9 rows in set (0.00 sec)
+8 rows in set (0.00 sec)
 
 mysql> DESCRIBE T_SENSOR;
 +-------------+--------------+------+-----+---------+-------+

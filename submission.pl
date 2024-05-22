@@ -119,18 +119,18 @@ sub process_file {
         if ($dt_correct && $mt_correct) {
 #           print $row->[0], " ", $row->[1], " ", $row->[2], "\n";
             my $time = $row->[0]; 
-            push @records, [$time, $sensor_id, $meter, undef, $sensor_name, $current_time, "Y"]
+            push @records, [$time, $sensor_id, $meter, undef, $current_time, "Y"]
         }
         elsif ($dt_correct && !$mt_correct) {
 #           print $row->[0], " ", $row->[1], " ", $row->[2], "\n";
             print "Data corrupted on row number $rn, $file: Sensor reading invalid\n";
             my $time = $row->[0]; 
-            push @records, [$time, $sensor_id, undef, $meter, $sensor_name, $current_time, "N"]
+            push @records, [$time, $sensor_id, undef, $meter, $current_time, "N"]
         }
         elsif (!$dt_correct && $mt_correct) {
 #           print $row->[0], " ", $row->[1], " ", $row->[2], "\n";
             print "Data corrupted on row number $rn, $file: Datetime invalid\n";
-            push @records, [undef, $sensor_id, $meter, undef, $sensor_name, $current_time, "N"]
+            push @records, [undef, $sensor_id, $meter, undef, $current_time, "N"]
         }
         else{       # !$dt_correct && !$mt_correct
 #           print $row->[0], " ", $row->[1], " ", $row->[2], "\n";
@@ -153,13 +153,12 @@ sub process_file {
 sub insert_into_t_data {
     my $dbh = $_[0];
     my @records = $_[1]->@*;
-    my $values = join ", ", ("( ?, ?, ?,   ?, ?, ?, ?)") x @records;
+    my $values = join ", ", ("( ?, ?, ?,  ?, ?, ?)") x @records;
     my $sth = $dbh->prepare("INSERT INTO T_DATA (
                 TAKEN_AT, 
                 SENSOR_ID, 
                 SENSOR_READING,
                 ORIGINAL_SENSOR_READING,
-                SENSOR_NAME, 
                 CREATED_AT, 
                 VALIDITY
               ) VALUES $values");
