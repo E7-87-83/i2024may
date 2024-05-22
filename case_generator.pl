@@ -1,4 +1,5 @@
-use v5.30.0;
+#!/usr/bin/perl
+use strict;
 use warnings;
 use Crypt::PRNG qw/random_string rand/;
 use DateTime;
