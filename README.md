@@ -33,9 +33,9 @@ mysql> DESCRIBE T_SENSOR;
 5 rows in set (0.00 sec)
 ```
 
-For the table of sensor, we can add
+For the table of sensor, we might add
 ```
-alter table T_DATA2 ADD CONSTRAINT UK_TIME_EMIT UNIQUE (SENSOR_ID, TAKEN_AT);
+alter table T_DATA ADD CONSTRAINT UK_TIME_EMIT UNIQUE (SENSOR_ID, TAKEN_AT);
 ```
 
 but this risks making INSERT statement (which is by design multiple rows) fails and useful records would be lost.
