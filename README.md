@@ -75,7 +75,7 @@ chmod +x submission.pl
 ---
 # Performance
 
-As stated, there is an optional parameter number of threads can be set. The default is 6. Inside the program we can also set the number of rows for each INSERT statement; the default is 100,000. These numbers being too large may cause program error, like aborting due to "double free or corruption", or some database insertion exeution fails due to "DBD::mysql::st execute failed: Lost connection to MySQL server during query".
+As stated, there is an optional command-line parameter, number of threads, can be set. The default is 6 (this number optimized against my laptop computer). Inside the program we can also set the number of rows ($data_size) for each INSERT statement; the default is 100,000. These numbers being too large may cause program error, like aborting due to "double free or corruption", or some database insertion exeution fails due to "DBD::mysql::st execute failed: Lost connection to MySQL server during query".
 
 Some trial data:
 
