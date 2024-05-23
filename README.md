@@ -53,7 +53,7 @@ To setup the program, firstly run the following in environment:
 ```
 yum -y install cpanm gcc perl perl-App-cpanminus # ensure gcc, cpanminus and perl is installed
 # replace yum with appropriate command like apt-get for different Linux versions
-cpanm Text::CSV_XS Config::Any DBI DateTime DateTime::Format::ISO8601 Crypt::PRNG
+cpanm Text::CSV_XS Config::Any DBI DateTime DateTime::Format::ISO8601 Crypt::PRNG DBD::mysql
 ```
 
 Finally run
