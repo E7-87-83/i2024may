@@ -38,7 +38,7 @@ For the table of sensor, we might add
 alter table T_DATA ADD CONSTRAINT UK_TIME_EMIT UNIQUE (SENSOR_ID, TAKEN_AT);
 ```
 
-but this risks making INSERT statement (which is by design multiple rows) fails and useful records would be lost.
+but this risks making INSERT statement (which is by design multiple rows) fail and useful records would be lost.
 
 The database configuration for the program is set on (1) config.yaml , where the meaning of each key is intuitive; (2) line 58 variable $dsn (data source name) of the program, currently using mysql, please refer to https://metacpan.org/pod/DBD::ODBC#SYNOPSIS or https://metacpan.org/pod/DBD::Pg#SYNOPSIS, etc., for other database systems.
 
